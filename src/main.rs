@@ -1,26 +1,20 @@
 mod voxel;
-use std::io::{self};
+
+use std::{any::type_name_of_val, io::{self}};
 use voxel::*;
 
 
 fn main() -> io::Result<()> {
-    let sections = parse_voxel("01749197760947016001.dec_data").unwrap();
-
+    
+    let sections = parse_section("./test/ca4Block.dec_data")?;
     for section in sections {
-        for (key, value) in section.entries {
-            match value {
-            Value::Text(s) => println!("  {} = {}", key, s),
-            Value::Binary(data) => println!("  {} : {:?} (binary)", key, data),
-            Value::BinaryList(list) => {
-                println!("  {} : [", key);
-                for (i, entry) in list.iter().enumerate() {
-                        println!("    {}: {:?}", i, entry);
-                    }
-                println!("  ]");
-                }
-            }
-        }
-
+        // println!("{}, {}",section.name,type_name_of_val(&section.name));
+        match section.name.as_str() {
+            "chunk" => {
+                parse_chunk_data(&section.data);
+            },
+            _ => {}
+       } 
     }
 
     Ok(())
